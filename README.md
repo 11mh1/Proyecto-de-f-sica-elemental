@@ -1,4 +1,4 @@
-# Proyecto de fisica elemental
+# Proyecto de fisica elemental del grupo 1
 Simulador de *MRUV* en python usando manim.
 
 ### Lenguajes usados
