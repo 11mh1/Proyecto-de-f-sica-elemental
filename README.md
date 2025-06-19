@@ -20,3 +20,5 @@ Se simula la gravedad y se considera un plano inclinado con angulo, y longitudes
 #### Numpy : `pip install numpy`
 #### FFMPG (release builds) : https://www.gyan.dev/ffmpeg/builds/
 #### Visual studio code : https://code.visualstudio.com/download
+#### Comando : `manim -pql plano_inclinado.py PlanoInclinadoFisico`
+
