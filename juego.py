@@ -1,0 +1,128 @@
+import pygame
+import sys
+import time
+import random
+
+# Inicialización
+pygame.init()
+WIDTH, HEIGHT = 800, 400
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Dino MRUV")
+clock = pygame.time.Clock()
+font = pygame.font.SysFont('Arial', 24)
+
+# Colores
+WHITE = (255, 255, 255)
+DINO_COLOR = (100, 200, 100)
+OBSTACLE_COLOR = (200, 100, 100)
+BG_COLOR = (30, 30, 30)
+
+# Dino
+dino = pygame.Rect(50, HEIGHT - 70, 40, 40)
+ground_y = HEIGHT - 70
+
+# MRUV variables
+x0 = dino.x
+v0 = 0
+a = 0.5  # Aceleración inicial
+start_time = time.time()
+
+# Salto
+is_jumping = False
+jump_velocity = -12
+gravity = 0.8
+vertical_velocity = 0
+
+# Obstáculos
+obstacles = []
+OBSTACLE_WIDTH = 30
+OBSTACLE_HEIGHT = 50
+SPAWN_INTERVAL = 2000  # milisegundos
+last_spawn_time = pygame.time.get_ticks()
+
+
+running = True
+while running:
+    dt = time.time() - start_time  # Tiempo transcurrido
+
+    screen.fill(BG_COLOR)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # Teclas
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_UP]:
+        a += 0.01
+    if keys[pygame.K_DOWN]:
+        a -= 0.01
+    if keys[pygame.K_SPACE] and not is_jumping:
+        is_jumping = True
+        vertical_velocity = jump_velocity
+
+    # Actualizar movimiento horizontal (MRUV)
+    v = v0 + a * dt
+    x = x0 + v0 * dt + 0.5 * a * dt**2
+    dino.x = int(x)
+
+    # Movimiento vertical (salto)
+    if is_jumping:
+        dino.y += int(vertical_velocity)
+        vertical_velocity += gravity
+        if dino.y >= ground_y:
+            dino.y = ground_y
+            is_jumping = False
+
+    
+    pygame.draw.rect(screen, DINO_COLOR, dino)
+
+   
+    current_time = pygame.time.get_ticks()
+    if current_time - last_spawn_time > SPAWN_INTERVAL:
+        obstacle = pygame.Rect(WIDTH, ground_y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT)
+        obstacles.append(obstacle)
+        last_spawn_time = current_time
+
+    for obstacle in list(obstacles):
+        obstacle.x -= 6  # Velocidad fija de obstáculos
+        pygame.draw.rect(screen, OBSTACLE_COLOR, obstacle)
+        if obstacle.right < 0:
+            obstacles.remove(obstacle)
+        if dino.colliderect(obstacle):
+            text = font.render("💥 ¡Perdiste!", True, (255, 0, 0))
+            screen.blit(text, (WIDTH // 2 - 80, HEIGHT // 2))
+            pygame.display.flip()
+            pygame.time.wait(2000)
+            # Reinicio
+            dino.x = 50
+            x0 = dino.x
+            v0 = 0
+            start_time = time.time()
+            a = 0.5
+            obstacles.clear()
+            continue
+
+    
+    info = [
+        f"Aceleración (a): {a:.2f} px/s²",
+        f"Velocidad (v): {v:.2f} px/s",
+        f"Posición (x): {x:.2f} px"
+    ]
+    for i, line in enumerate(info):
+        text = font.render(line, True, WHITE)
+        screen.blit(text, (10, 10 + 30 * i))
+
+    
+    if dino.x > WIDTH:
+        dino.x = 50
+        x0 = 50
+        v0 = 0
+        start_time = time.time()
+        obstacles.clear()
+
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
+sys.exit()
