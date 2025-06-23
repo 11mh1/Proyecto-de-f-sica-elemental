@@ -22,5 +22,6 @@ Se simula la gravedad y se considera un plano inclinado con angulo, y longitudes
 #### Visual studio code : https://code.visualstudio.com/download
 #### MIKTeX : [https://code.visualstudio.com/download](https://miktex.org/download)
 #### Comando : `manim -pql plano_inclinado.py PlanoInclinadoFisico`
+#### Pygame : `pip install pygame`
 
 https://www.youtube.com/watch?v=FJ8DBlvRg2s
